@@ -30,16 +30,15 @@ Then begin using the `WScrape` class (replace values seen below with your own).
 [source,java]
 ----
 WScrape scraper = new WScrape(
-		"jdbc:mysql://192.168.1.1/my_schema_name",
-		"my.ssh.host.com",
-		1000 * 60 * 5L, // Every 5 minutes
-		new File("sql_login.json"),
-		new File("ssh_login.json"),
-		loginEntries -> {
-			System.out.println("Retrieved " + loginEntries.size()
-					+ " entries at " + Instant.now() + ".");
-			return null;
-		}
+	"jdbc:mysql://192.168.1.1/my_schema_name",
+	"my.ssh.host.com",
+	1000 * 60 * 5L, // Every 5 minutes
+	new File("sql_login.json"),
+	new File("ssh_login.json"),
+	loginEntries -> {
+		System.out.println("Retrieved " + loginEntries.size() + " entries at " + Instant.now() + ".");
+		return null;
+	}
 );
 scraper.start();
 
