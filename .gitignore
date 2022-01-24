@@ -1,0 +1,5 @@
+# Project exclude paths
+/.gradle/
+/build/
+sql_login.json
+ssh_login.json

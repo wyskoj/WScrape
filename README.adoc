@@ -1,0 +1,81 @@
+= WScrape
+
+Makes repeated calls to an SSH server to run the `w` command and writes the response into a SQL server.
+
+== Usage
+
+Create a table in your SQL server that follows this schema:
+
+[source,sql]
+----
+create table LoginEntry
+(
+    record_time timestamp    not null,
+    user        varchar(16)  not null,
+    tty         varchar(16)  not null,
+    `from`      varchar(32)  not null,
+    `login@`    varchar(16)  not null,
+    idle        varchar(16)  not null,
+    jcpu        varchar(16)  not null,
+    pcpu        varchar(16)  not null,
+    what        varchar(256) not null,
+    primary key (user, record_time, tty)
+);
+----
+
+Then begin using the `WScrape` class (replace values seen below with your own).
+
+=== Java
+
+[source,java]
+----
+WScrape scraper = new WScrape(
+		"jdbc:mysql://192.168.1.1/my_schema_name",
+		"my.ssh.host.com",
+		1000 * 60 * 5L, // Every 5 minutes
+		new File("sql_login.json"),
+		new File("ssh_login.json"),
+		loginEntries -> {
+			System.out.println("Retrieved " + loginEntries.size()
+					+ " entries at " + Instant.now() + ".");
+			return null;
+		}
+);
+scraper.start();
+
+// Some time later...
+
+scraper.stop();
+scraper.dispose();
+----
+
+=== Kotlin
+[source,kotlin]
+----
+val scraper = WScrape(
+    "jdbc:mysql://192.168.1.1/my_schema_name",
+    "my.ssh.host.com",
+    1000 * 60 * 5L, // Every 5 minutes
+    File("sql_login.json"),
+    File("ssh_login.json")
+) {
+    println("Retrieved ${it.size} entries at ${Instant.now()}")
+}.also { it.start() }
+
+// Some time later...
+
+with(scraper) {
+    stop()
+    dispose()
+}
+----
+
+== Building
+
+[source,bash]
+----
+$ ./gradlew build
+----
+
+== License
+Licensed under link:LICENSE[MIT].
